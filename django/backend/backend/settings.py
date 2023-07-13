@@ -122,6 +122,9 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
+    'SERIALIZERS': {
+        'user_create': 'user_profiles.serializers.UserRegistrationSerializer'
+    }
 }
 
 SIMPLE_JWT = {

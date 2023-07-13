@@ -8,3 +8,4 @@ urlpatterns = [
 # '/auth/jwt/create' {refresh: , access: }
 # '/auth/jwt/refresh' {refresh: refreshToken})
 # '/auth/users/me/'
+# 'auth/users/
