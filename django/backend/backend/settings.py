@@ -125,13 +125,11 @@ DJOSER = {
 }
 
 SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('Token',),
-}
-
-SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Token',),
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(minutes=360),
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
