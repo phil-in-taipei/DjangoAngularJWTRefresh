@@ -1,1 +1,56 @@
-<p>login works!</p>
+<app-unauthenticated-header></app-unauthenticated-header>
+<div class="container content">
+  <div class="color-frame rounded">
+    <div class="mt-4 p-5 rounded">
+      <div *ngIf='isErrorLogin'>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <h3>Login Error, Try Again</h3>
+          <button type="button" class="btn-close" (click)="onClearLoginError()"
+          data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      </div>
+      <h1>Login</h1>
+      <div>
+        <form (submit)="onLogin(loginForm)" #loginForm="ngForm">
+          <div>
+            <label>Username</label>
+            <input
+            class="form-control"
+            name="username"
+            type="text"
+            required
+            text
+            minlength="4"
+            ngModel
+            placeholder="Username"
+            #username="ngModel"
+          >
+          <div *ngIf="password.touched && username.invalid">Please enter a username.</div>
+          </div>
+          <br />
+          <div>
+            <label>Password</label>
+            <input
+            class="form-control"
+            type="password"
+            minlength="5"
+            rows="4"
+            name="password"
+            ngModel
+            required
+            placeholder="Password"
+            #password="ngModel"
+            >
+          <div *ngIf="password.touched && password.invalid">Please enter a password.</div>
+          </div>
+          <br />
+          <div>
+            <button class="btn btn-outline-secondary" type="submit"
+            >Login</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<app-unauthenticated-footer></app-unauthenticated-footer>
