@@ -1,18 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'app-authenticated-user',
-    templateUrl: './authenticated-user.component.html',
-    styleUrls: ['./authenticated-user.component.css']
-  })
+  selector: 'app-authenticated-user',
+  templateUrl: './authenticated-user.component.html',
+  styleUrls: ['./authenticated-user.component.css']
+})
+export class AuthenticatedUserComponent implements OnInit {
 
-  export class AuthenticatedUserComponent implements OnInit {
+  constructor() { }
 
-    //constructor() { } //private store: Store<AppState>
-
-    ngOnInit(): void {
-        console.log('initializing');
-    }
-
-
+  ngOnInit(): void {
   }
+
+}

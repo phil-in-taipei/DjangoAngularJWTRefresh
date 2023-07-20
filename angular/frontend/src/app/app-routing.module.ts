@@ -9,15 +9,15 @@ const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'contact', component: ContactComponent },
   { path: 'info', component: InformationComponent },
-  { path: 'user',
-    loadChildren: () => import('./authenticated-user/authenticated-user.module')
-      .then(m => m.AuthenticatedUserModule),
-    canActivate: [AuthGuard]
-  },
+  { path: 'authenticated-user', 
+    loadChildren: () => import(
+      './authenticated-user/authenticated-user.module')
+      .then(m => m.AuthenticatedUserModule), canActivate: [AuthGuard] },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers: [AuthGuard]
 })
 export class AppRoutingModule { }

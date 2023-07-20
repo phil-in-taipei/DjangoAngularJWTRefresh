@@ -44,7 +44,7 @@ export class AuthService {
             let timeUntilTokenExp = new Date().getTime() - this.tokenExpTime.getTime();
             this.setAuthTimer(timeUntilTokenExp); // if the value is negative, the timer will
                                                   // immediately trigger refreshTokenOrLogout();
-            this.router.navigate(['/user/scheduling/landing']);
+            this.router.navigate(['/authenticated-user/user-profile']);
           } else {
             console.log('refresh token expired. Logging out...')
             this.logout();
@@ -166,7 +166,7 @@ export class AuthService {
           console.log(dtRfrshTken);
           this.saveAuthData(this.refresh, this.refreshExpTime,
             this.token, this.tokenExpTime);
-          this.router.navigate(['/user/user-profile']);
+          this.router.navigate(['/authenticated-user/user-profile']);
         }
       }, error => {
         console.log(error)
