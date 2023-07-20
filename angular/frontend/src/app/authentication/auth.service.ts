@@ -186,6 +186,7 @@ export class AuthService {
     localStorage.removeItem('refresh');
     localStorage.removeItem('refreshExpiration');
     localStorage.removeItem('userId');
+    this.router.navigate(['/']);
   }
 
   private refreshTokenOrLogout() {
@@ -193,7 +194,7 @@ export class AuthService {
     if(this.refreshExpTime < now) {
       console.log('the refresh token is expired');
       this.logout();
-      this.router.navigate(['/']);
+      //this.router.navigate(['/']);
     } else {
       console.log('getting a new token...');
       this.fetchRefreshToken();
