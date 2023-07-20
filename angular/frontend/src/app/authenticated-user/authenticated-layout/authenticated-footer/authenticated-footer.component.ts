@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../../../authentication/auth.service';
 
 @Component({
   selector: 'app-authenticated-footer',
@@ -7,9 +9,26 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AuthenticatedFooterComponent implements OnInit {
 
-  constructor() { }
+  userIsAuthenticated = false;
+  private authListenerSubs: Subscription;
+
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
+    this.userIsAuthenticated = this.authService.getIsAuth();
+    this.authListenerSubs = this.authService
+    .getAuthStatusListener()
+      .subscribe(isAuthenticated => {
+        this.userIsAuthenticated = isAuthenticated;
+    });
+  }
+
+  ngOnDestroy() {
+    this.authListenerSubs.unsubscribe()
+  }
+
+  onLogout() {
+    this.authService.logout();
   }
 
 }

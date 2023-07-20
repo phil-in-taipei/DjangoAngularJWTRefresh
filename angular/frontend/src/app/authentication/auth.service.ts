@@ -81,11 +81,11 @@ export class AuthService {
           console.log('this is now:')
           console.log(dtToken);
           console.log('this is when the token will expire...');
-          dtToken.setMinutes(dtToken.getMinutes() + 4);
-          dtToken.setSeconds(dtToken.getSeconds() + 45);
+          //dtToken.setMinutes(dtToken.getMinutes() + 4);
+          dtToken.setSeconds(dtToken.getSeconds() + 50);
           console.log(dtToken);
           this.tokenExpTime = dtToken;
-          this.setAuthTimer(285000);
+          this.setAuthTimer(50000); // 50000 (50 seconds) // 285000 (4.75 minutes)
           console.log('this is when the refresh will expire:')
           console.log(this.refreshExpTime);
           this.saveAuthData(this.refresh, this.refreshExpTime,
@@ -153,15 +153,17 @@ export class AuthService {
           console.log('this is now:')
           console.log(dtToken);
           console.log('this is when the token will expire...');
-          dtToken.setMinutes(dtToken.getMinutes() + 4);
-          dtToken.setSeconds(dtToken.getSeconds() + 45);
+          //dtToken.setMinutes(dtToken.getMinutes() + 4);
+          dtToken.setSeconds(dtToken.getSeconds() + 50);
           console.log(dtToken);
           this.tokenExpTime = dtToken;
           const dtRfrshTken:Date = new Date();
-          dtRfrshTken.setHours( dtRfrshTken.getHours() + 23 );
-          dtRfrshTken.setMinutes(dtRfrshTken.getMinutes() + 45);
+          //dtRfrshTken.setHours( dtRfrshTken.getHours() + 23 );
+          //dtRfrshTken.setMinutes(dtRfrshTken.getMinutes() + 45);
+          dtRfrshTken.setMinutes(dtRfrshTken.getMinutes() + 2);
+          dtRfrshTken.setSeconds(dtRfrshTken.getSeconds() + 50);
           this.refreshExpTime = new Date(dtRfrshTken);
-          this.setAuthTimer(285000); // 4 minutes 45 seconds
+          this.setAuthTimer(50000); // 285000 (4 minutes 45 seconds) // 50000 (50 seconds)
           console.log('this is when the refresh expires')
           console.log(dtRfrshTken);
           this.saveAuthData(this.refresh, this.refreshExpTime,
@@ -191,6 +193,7 @@ export class AuthService {
     if(this.refreshExpTime < now) {
       console.log('the refresh token is expired');
       this.logout();
+      this.router.navigate(['/']);
     } else {
       console.log('getting a new token...');
       this.fetchRefreshToken();

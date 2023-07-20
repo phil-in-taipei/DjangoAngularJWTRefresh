@@ -11,15 +11,17 @@
               JWT Experiment
             </a>
             <ul class="dropdown-menu mydropnav bg-dark" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item bg-dark" routerLink="/logout" 
-                href="#">Logout</a></li>
+              <li *ngIf="userIsAuthenticated">
+                <a class="nav-link" href="#" (click)="onLogout()">Logout</a>
+              </li>
               <li><a class="dropdown-item bg-dark" 
                 routerLink="authenticated-user/user-profile" 
                 href="#">Profile</a></li>
             </ul>
           </li>
-          <li><a class="dropdown-item bg-dark" routerLink="/logout" 
-            href="#">Logout</a></li>
+          <li *ngIf="userIsAuthenticated">
+            <a class="nav-link" href="#" (click)="onLogout()">Logout</a>
+          </li>
         </ul>
       </div>
     </div>
