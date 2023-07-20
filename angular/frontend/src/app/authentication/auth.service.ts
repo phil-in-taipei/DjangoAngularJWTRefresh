@@ -166,7 +166,7 @@ export class AuthService {
           console.log(dtRfrshTken);
           this.saveAuthData(this.refresh, this.refreshExpTime,
             this.token, this.tokenExpTime);
-          this.router.navigate(['/user/scheduling/landing']);
+          this.router.navigate(['/user/user-profile']);
         }
       }, error => {
         console.log(error)
