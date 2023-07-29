@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 //import * as CryptoJS from 'crypto-js';
 import { environment } from '../../environments/environment';
+import { AuthDataModel } from '../models/auth-data.model';
 import { AuthLoginModel } from '../models/auth-login.model';
 
 @Injectable({
@@ -35,6 +36,8 @@ export class AuthService {
           console.log(authInformation.refreshExp);
           const now = new Date();
           if(authInformation.refreshExp > now) {
+            console.log('refresh token is not expired. ' + 
+              'Setting token variables and authentication status to true...')
             this.isAuthenticated = true;
             this.authStatusListener.next(true);
             this.token = authInformation.token;
@@ -42,6 +45,7 @@ export class AuthService {
             this.refresh = authInformation.refresh;
             this.refreshExpTime = new Date(authInformation.refreshExp);
             let timeUntilTokenExp = new Date().getTime() - this.tokenExpTime.getTime();
+            console.log('reseting timer ....')
             this.setAuthTimer(timeUntilTokenExp); // if the value is negative, the timer will
                                                   // immediately trigger refreshTokenOrLogout();
             this.router.navigate(['/authenticated-user/user-profile']);
@@ -55,6 +59,9 @@ export class AuthService {
         this.logout();
         //return;
       }
+    } else {
+      console.log('Token info undefined. Logging out...');
+        this.logout();
     }
   }
 
@@ -102,7 +109,7 @@ export class AuthService {
     return this.authStatusListener.asObservable();
   }
 
-  private getAuthData() {
+  private getAuthData():AuthDataModel | undefined {
     const token = localStorage.getItem('token');
     const accessExpDate = localStorage.getItem('expiration');
     const refresh = localStorage.getItem('refresh');
@@ -118,15 +125,15 @@ export class AuthService {
     }
   }
 
-  getAuthToken() {
+  getAuthToken(): string {
     return this.token;
   }
 
-  getIsAuth() {
+  getIsAuth(): boolean {
     return this.isAuthenticated;
   }
 
-  getIsLoginError() {
+  getIsLoginError(): boolean {
     return this.isLoginError;
   }
 
