@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer
+#from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer
 from django.contrib.auth import get_user_model
 from .models import UserProfile
 
@@ -7,6 +7,8 @@ from .models import UserProfile
 User = get_user_model()
 
 
+# this is for nested (one-to-one) relationship user filed
+# in the profile display api
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -14,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
                   'username')
 
 
+# this is for use in displaying and updating user profile and user info
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
