@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 //import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { HttpTestingController, HttpClientTestingModule
-   } from '@angular/common/http/testing'; // RouterTestingModule
+   } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 
@@ -66,6 +66,8 @@ fdescribe('AuthService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+    expect(service.getAuthStatusListener()).toBeTruthy();
+    expect(service.getAuthToken()).toBeFalsy();
   });
 
 
