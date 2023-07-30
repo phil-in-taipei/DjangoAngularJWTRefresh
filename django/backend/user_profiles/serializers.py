@@ -22,12 +22,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+# this is for use as the nested profile field in UserCreateSerializer (below)
 class UserProfileCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('surname', 'given_name', "contact_email")
 
 
+# this is used to create new users and the related profile in one api call
+# the nested profile field will have an object with the fields in
+# UserProfileCreateSerializer (above)
 class UserCreateSerializer(serializers.ModelSerializer):
     profile = serializers.RelatedField(read_only=True)
     re_password = serializers.ReadOnlyField()

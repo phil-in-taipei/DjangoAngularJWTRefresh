@@ -10,6 +10,7 @@ from .models import UserProfile
 from .serializers import UserProfileSerializer, UserCreateSerializer
 
 
+# enables user to both view and edit profile
 class UserProfileView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -32,6 +33,9 @@ class UserProfileView(APIView):
         return Response(code=400, data="wrong parameters")
 
 
+# ListCreateAPIView is used with only a 'post' call allowed
+# in order to create both the new user and the related profile
+# together in one api call
 class UserList(generics.ListCreateAPIView):
     model = User
     serializer_class = UserCreateSerializer
@@ -39,14 +43,18 @@ class UserList(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         data = request.data
+        # checks that the password and re_password confirmation match
         if data['password'] == data['re_password']:
             with transaction.atomic():
+                # first creates new user object
                 user = User.objects.create_user(
                     username=data['username'],
                     password=data['password']
                 )
                 user.clean()
                 user.save()
+                # after user object has been created, a related
+                # profile is created using nested fields in the
                 UserProfile.objects.create(
                     user=user,
                     surname=data['profile']['surname'],
