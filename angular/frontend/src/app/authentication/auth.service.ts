@@ -5,7 +5,8 @@ import { Subject } from 'rxjs';
 //import * as CryptoJS from 'crypto-js';
 import { environment } from '../../environments/environment';
 import { AuthDataModel } from '../models/auth-data.model';
-import { AuthLoginModel } from '../models/auth-login.model';
+import { AuthLoginModel, AuthLoginResponseModel, 
+  AuthTokenRefreshResponseModel } from '../models/auth-login.model';
 
 @Injectable({
   providedIn: 'root'
@@ -75,8 +76,8 @@ export class AuthService {
     let refresh = this.refresh;
     console.log('this is the unencryped refresh token')
     console.log(refresh);
-    this.http.post<{access: string
-    }>(`${environment.apiUrl}/auth/jwt/refresh`, {refresh: refresh})
+    this.http.post<AuthTokenRefreshResponseModel>(
+      `${environment.apiUrl}/auth/jwt/refresh`, {refresh: refresh})
       .subscribe(response => {
         console.log(response)
         if (response.access) {
@@ -143,8 +144,7 @@ export class AuthService {
 
   login(username: string, password: string) {
     const authData: AuthLoginModel = {username: username, password: password};
-    this.http.post<{refresh: string, refreshExpiresIn: number, access: string,
-    }>(`${environment.apiUrl}/auth/jwt/create`, authData)
+    this.http.post<AuthLoginResponseModel>(`${environment.apiUrl}/auth/jwt/create`, authData)
       .subscribe(response => {
         console.log('This is the login response:')
         console.log(response)

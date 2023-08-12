@@ -58,10 +58,10 @@ fdescribe('AuthService', () => {
       ]
     });
 
-    service = TestBed.get(AuthService);//TestBed.inject(AuthService);
+    service = TestBed.inject(AuthService); //TestBed.get(AuthService);
     //service = TestBed.inject(AuthService, { provide: HttpClient, use: hTTPClientSpy },
     //  { provide: Router, user: routerSpy },)
-    httpTestingController = TestBed.get(HttpTestingController);
+    httpTestingController = TestBed.inject(HttpTestingController);//TestBed.get(HttpTestingController);
   });
 
   it('should be created', () => {
