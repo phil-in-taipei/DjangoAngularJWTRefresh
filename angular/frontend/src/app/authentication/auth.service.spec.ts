@@ -1,16 +1,17 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync } from '@angular/core/testing';
 import { Location } from '@angular/common';
 import { AuthService } from './auth.service';
-//import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 import { HttpTestingController, HttpClientTestingModule
    } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { httpTokensResponse } from '../test-data/authentication-tests/authentication-data';
 
 
 fdescribe('AuthService', () => {
   
-  //let hTTPClientSpy: any;
+  let localStorageSpy: any;
   let routerSpy: any;
   let service: AuthService;
   let httpTestingController: HttpTestingController;
@@ -37,7 +38,7 @@ fdescribe('AuthService', () => {
 
     spyOn(localStorage, 'getItem')
      .and.callFake(mockLocalStorage.getItem);
-    spyOn(localStorage, 'setItem')
+   spyOn(localStorage, 'setItem')
      .and.callFake(mockLocalStorage.setItem);
     spyOn(localStorage, 'removeItem')
      .and.callFake(mockLocalStorage.removeItem);
@@ -47,36 +48,56 @@ fdescribe('AuthService', () => {
 
 
 
-    //hTTPClientSpy = jasmine.createSpyObj('HttpClient', ["post", "get"]);
     routerSpy = jasmine.createSpyObj('Router', ["navigate"]);
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule, RouterTestingModule ],
       providers: [
-        AuthService,
-        //{ provide: HttpClient, use: hTTPClientSpy },
-        //{ provide: Router, user: routerSpy },
+        AuthService, { provider: localStorage, useValue: mockLocalStorage },
       ]
     });
 
-    service = TestBed.inject(AuthService); //TestBed.get(AuthService);
-    //service = TestBed.inject(AuthService, { provide: HttpClient, use: hTTPClientSpy },
-    //  { provide: Router, user: routerSpy },)
-    httpTestingController = TestBed.inject(HttpTestingController);//TestBed.get(HttpTestingController);
+    service = TestBed.inject(AuthService);
+    httpTestingController = TestBed.inject(HttpTestingController);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
     expect(service.getAuthStatusListener()).toBeTruthy();
-    expect(service.getAuthToken()).toBeFalsy();
+    expect(service.getAuthToken()).toBeFalsy()
   });
 
 
   it('should return user login data', () => {
-    pending()
-    //service.login('testusername', 'testpassword')
-    //.subscribe(userData => {
-    //  expect(userData).toBeTruthy()
-    //});
+    //localStorageSpy = spyOn(localStorage, 'setItem').and.callThrough();
+    //spyOn(localStorage, 'getItem').and.callThrough();
+    service.login('testusername', 'testpassword');
+    const request = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
+    //const res = await request;
+    expect(request.request.body).toEqual({username: 'testusername', password: 'testpassword'});
+    // below fails because not called in this method
+    //expect(localStorage.setItem).toHaveBeenCalledTimes(4); 
+
+    //expect(localStorageSpy.setItem).toHaveBeenCalledTimes(4); 
+
+    // below can't be spied on because it is private
+    //expect(service.saveAuthData).toHaveBeenCalledTimes(1);
+
+    // below can't get the data item -- it is just undefined
+    //expect(service.getAuthToken()).toEqual(httpTokensResponse['access']);
+
+    // below can't get mock local storage data -- it is still null
+    expect(localStorage.getItem('token')).toEqual(httpTokensResponse['access']);
+
+    //expect(service.getIsAuth()).toBe(true);
+    //console.log('this is the response event:')
+    //console.log(res.event);
+    //expect(res).toBeTruthy();
+
+    request.flush({ httpTokensResponse });
+
   });
 
   it('should be navigate to ...', () => {
