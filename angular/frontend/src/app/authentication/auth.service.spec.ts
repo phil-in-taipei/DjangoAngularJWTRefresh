@@ -1,5 +1,4 @@
-import { TestBed, fakeAsync } from '@angular/core/testing';
-import { Location } from '@angular/common';
+import { TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
@@ -7,12 +6,11 @@ import { HttpTestingController, HttpClientTestingModule
    } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { httpTokensResponse } from '../test-data/authentication-tests/authentication-data';
+import { UserProfileComponent } from '../authenticated-user/user-profile/user-profile.component';
 
 
 fdescribe('AuthService', () => {
-  
-  let localStorageSpy: any;
-  let routerSpy: any;
+  let testRouter: Router; 
   let service: AuthService;
   let httpTestingController: HttpTestingController;
 
@@ -48,13 +46,18 @@ fdescribe('AuthService', () => {
 
 
 
-    routerSpy = jasmine.createSpyObj('Router', ["navigate"]);
+    //routerSpy = jasmine.createSpyObj('Router', ["navigate"]);
     TestBed.configureTestingModule({
-      imports: [ HttpClientTestingModule, RouterTestingModule ],
+      imports: [ HttpClientTestingModule, RouterTestingModule.withRoutes([
+        { path: 'authenticated-user/user-profile', component: UserProfileComponent }
+        ]), ],
       providers: [
         AuthService, { provider: localStorage, useValue: mockLocalStorage },
       ]
     });
+
+    testRouter = TestBed.inject(Router);
+    spyOn(testRouter, 'navigate').and.returnValue(Promise.resolve(true));  
 
     service = TestBed.inject(AuthService);
     httpTestingController = TestBed.inject(HttpTestingController);
@@ -67,43 +70,91 @@ fdescribe('AuthService', () => {
   });
 
 
-  it('should return user login data', () => {
-    //localStorageSpy = spyOn(localStorage, 'setItem').and.callThrough();
-    //spyOn(localStorage, 'getItem').and.callThrough();
+  it('should accept user login data to make the request', 
+    fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const request = httpTestingController.expectOne({
       method: 'POST',
       url:`${environment.apiUrl}/auth/jwt/create`,
     });
-    //const res = await request;
+
     expect(request.request.body).toEqual({username: 'testusername', password: 'testpassword'});
-    // below fails because not called in this method
-    //expect(localStorage.setItem).toHaveBeenCalledTimes(4); 
 
-    //expect(localStorageSpy.setItem).toHaveBeenCalledTimes(4); 
+    request.flush(httpTokensResponse);
 
-    // below can't be spied on because it is private
-    //expect(service.saveAuthData).toHaveBeenCalledTimes(1);
+    flush();
 
-    // below can't get the data item -- it is just undefined
-    //expect(service.getAuthToken()).toEqual(httpTokensResponse['access']);
+  }));
 
-    // below can't get mock local storage data -- it is still null
-    expect(localStorage.getItem('token')).toEqual(httpTokensResponse['access']);
+  it('should save token the token, refresh token, and expiration times', 
+    fakeAsync(() => {
+    service.login('testusername', 'testpassword');
+    const request = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
 
-    //expect(service.getIsAuth()).toBe(true);
-    //console.log('this is the response event:')
-    //console.log(res.event);
-    //expect(res).toBeTruthy();
+    request.flush(httpTokensResponse);
 
-    request.flush({ httpTokensResponse });
+    expect(localStorage.setItem).toHaveBeenCalledTimes(4); 
 
-  });
+    expect(localStorage.getItem('refresh')).toEqual(httpTokensResponse['refresh']);
+    expect(localStorage.getItem('token')).toEqual(httpTokensResponse['access']); 
 
-  it('should be navigate to ...', () => {
-    pending();
-    //const location: Location = TestBed.inject(Location);
-    // some logic will be called
-    //expect(location.path()).toBe('/some/other/route');
-  });
+    expect(localStorage.getItem('token')).toEqual(httpTokensResponse['access']); 
+    expect(localStorage.getItem('token')).toEqual(httpTokensResponse['access']); 
+    // saved to Date.prototype.toISOString should be 24 or 27 chars in length
+    expect(localStorage.getItem('refreshExpiration')?.length).toBeGreaterThanOrEqual(24);
+    expect(localStorage.getItem('expiration')?.length).toBeGreaterThanOrEqual(24);
+
+    expect(service.getAuthToken()).toEqual(httpTokensResponse['access']);
+
+    flush();
+
+  }));
+
+  it('should make the access token accesible by calling the getIsAuth() function', 
+    fakeAsync(() => {
+    service.login('testusername', 'testpassword');
+    const request = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
+
+    request.flush(httpTokensResponse);
+
+    expect(service.getAuthToken()).toEqual(httpTokensResponse['access']);
+
+    flush();
+
+  }));
+
+  it('should set auth status to true', 
+    fakeAsync(() => {
+    service.login('testusername', 'testpassword');
+    const request = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
+
+    request.flush(httpTokensResponse);
+
+    expect(service.getIsAuth()).toBe(true);
+
+    flush();
+
+  }));
+
+  it('should be navigate to user landing page upon successful login', fakeAsync(() => {
+    service.login('testusername', 'testpassword');
+    const request = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
+
+    request.flush(httpTokensResponse);
+    expect(testRouter.navigate).toHaveBeenCalledWith(['/authenticated-user/user-profile']);
+
+    flush();
+  }));
 });

@@ -149,6 +149,7 @@ export class AuthService {
         console.log('This is the login response:')
         console.log(response)
         if (response.access && response.refresh) {
+          console.log('The tokens are both in the login response')
           this.refresh = response.refresh;
           //this.refresh = CryptoJS.AES.encrypt(response.refresh, this.encryptKey).toString();//response.refresh;
           this.token = response.access;
@@ -176,6 +177,9 @@ export class AuthService {
           this.saveAuthData(this.refresh, this.refreshExpTime,
             this.token, this.tokenExpTime);
           this.router.navigate(['/authenticated-user/user-profile']);
+        } else {
+          console.log('the tokens are not in the response:')
+          console.log(response);
         }
       }, error => {
         console.log(error)
