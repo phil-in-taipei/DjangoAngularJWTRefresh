@@ -166,12 +166,13 @@ export class AuthService {
           console.log(dtToken);
           this.tokenExpTime = dtToken;
           const dtRfrshTken:Date = new Date();
-          //dtRfrshTken.setHours( dtRfrshTken.getHours() + 23 );
-          //dtRfrshTken.setMinutes(dtRfrshTken.getMinutes() + 45);
-          dtRfrshTken.setMinutes(dtRfrshTken.getMinutes() + 2);
-          dtRfrshTken.setSeconds(dtRfrshTken.getSeconds() + 50);
+          // for testing, the refresh expires in 2 mins and 50 seconds
+          // in production, the refresh expires in 23 hours and 45 minutes
+          dtRfrshTken.setHours(dtRfrshTken.getHours() + environment.tokenRefreshHoursAmount);
+          dtRfrshTken.setMinutes(dtRfrshTken.getMinutes() + environment.tokenRefreshMinsAmount);
+          dtRfrshTken.setSeconds(dtRfrshTken.getSeconds() + environment.tokenRefreshSecondsAmount);
           this.refreshExpTime = new Date(dtRfrshTken);
-          this.setAuthTimer(50000); // 285000 (4 minutes 45 seconds) // 50000 (50 seconds)
+          this.setAuthTimer(environment.authTimerAmount); // 285000 (4 minutes 45 seconds) // 50000 (50 seconds)
           console.log('this is when the refresh expires')
           console.log(dtRfrshTken);
           this.saveAuthData(this.refresh, this.refreshExpTime,

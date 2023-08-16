@@ -4,7 +4,11 @@
 
 export const environment = {
   production: false,
-  apiUrl: "http://localhost:8000"
+  apiUrl: "http://localhost:8000",
+  authTimerAmount: 50000, //(50 seconds)
+  tokenRefreshHoursAmount: 0,
+  tokenRefreshMinsAmount: 2,
+  tokenRefreshSecondsAmount: 50,
 };
 
 /*

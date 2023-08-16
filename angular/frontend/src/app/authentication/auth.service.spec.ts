@@ -1,11 +1,12 @@
-import { TestBed, fakeAsync, flush } from '@angular/core/testing';
+import { TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 import { HttpTestingController, HttpClientTestingModule
    } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { httpTokensResponse } from '../test-data/authentication-tests/authentication-data';
+import { httpTokensResponse, 
+  httpTokenRefreshResponse1 } from '../test-data/authentication-tests/authentication-data';
 import { UserProfileComponent } from '../authenticated-user/user-profile/user-profile.component';
 
 
@@ -101,8 +102,6 @@ fdescribe('AuthService', () => {
     expect(localStorage.getItem('refresh')).toEqual(httpTokensResponse['refresh']);
     expect(localStorage.getItem('token')).toEqual(httpTokensResponse['access']); 
 
-    expect(localStorage.getItem('token')).toEqual(httpTokensResponse['access']); 
-    expect(localStorage.getItem('token')).toEqual(httpTokensResponse['access']); 
     // saved to Date.prototype.toISOString should be 24 or 27 chars in length
     expect(localStorage.getItem('refreshExpiration')?.length).toBeGreaterThanOrEqual(24);
     expect(localStorage.getItem('expiration')?.length).toBeGreaterThanOrEqual(24);
@@ -129,7 +128,7 @@ fdescribe('AuthService', () => {
 
   }));
 
-  it('should set auth status to true', 
+  it('should set auth status to true upon successful login', 
     fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const request = httpTestingController.expectOne({
@@ -155,6 +154,32 @@ fdescribe('AuthService', () => {
     request.flush(httpTokensResponse);
     expect(testRouter.navigate).toHaveBeenCalledWith(['/authenticated-user/user-profile']);
 
+    flush();
+  }));
+
+  fit(`should set the timer and fetch a replacement token after ${environment.authTimerAmount} secs`, 
+  fakeAsync(() => {
+    service.login('testusername', 'testpassword');
+    const loginRequest = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
+
+
+    const refreshTokenRequest = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/refresh`,
+    });
+
+    loginRequest.flush(httpTokensResponse);
+    refreshTokenRequest.flush(httpTokenRefreshResponse1);
+
+    expect(localStorage.setItem).toHaveBeenCalledTimes(5); 
+
+    expect(localStorage.getItem('refresh')).toEqual(httpTokensResponse['refresh']);
+    expect(localStorage.getItem('token')).toEqual(httpTokenRefreshResponse1['access']); 
+    //tick(environment.authTimerAmount + 5);
+    
     flush();
   }));
 });
