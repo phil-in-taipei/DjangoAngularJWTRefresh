@@ -46,9 +46,6 @@ fdescribe('AuthService', () => {
      .and.callFake(mockLocalStorage.clear);
      
 
-
-
-    //routerSpy = jasmine.createSpyObj('Router', ["navigate"]);
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule, RouterTestingModule.withRoutes([
         { path: 'authenticated-user/user-profile', component: UserProfileComponent }
@@ -88,7 +85,7 @@ fdescribe('AuthService', () => {
 
   }));
 
-  it('should save token the token, refresh token, and expiration times', 
+  it('should save the token, refresh token, and expiration times in local storage after login', 
     fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const request = httpTestingController.expectOne({
@@ -113,7 +110,7 @@ fdescribe('AuthService', () => {
 
   }));
 
-  it('should make the access token accesible by calling the getIsAuth() function', 
+  it('should make the access token accesible by calling the getIsAuth() function after sucessful login', 
     fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const request = httpTestingController.expectOne({
@@ -158,7 +155,7 @@ fdescribe('AuthService', () => {
     flush();
   }));
 
-  it(`should set the timer and fetch a replacement token after ${environment.authTimerAmount} secs`, 
+  it(`should reset the timer and fetch a replacement token after ${environment.authTimerAmount} secs`, 
   fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const loginRequest = httpTestingController.expectOne({
@@ -188,7 +185,7 @@ fdescribe('AuthService', () => {
     tick(environment.authTimerAmount + 5);
   }));
 
-  it(`should set the timer and fetch a 2nd replacement token after ${environment.authTimerAmount * 2} secs`, 
+  it(`should reset the timer and fetch a 2nd replacement token after ${environment.authTimerAmount * 2} secs`, 
   fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const loginRequest = httpTestingController.expectOne({
@@ -227,7 +224,7 @@ fdescribe('AuthService', () => {
     tick(environment.authTimerAmount * 2 + 10);
   }));
 
-  it(`should set the timer and fetch a 3rd replacement token after ${environment.authTimerAmount * 3} secs`, 
+  it(`should reset the timer and fetch a 3rd replacement token after ${environment.authTimerAmount * 3} secs`, 
   fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const loginRequest = httpTestingController.expectOne({
@@ -275,7 +272,7 @@ fdescribe('AuthService', () => {
     tick(environment.authTimerAmount * 3 + 10);
   }));
 
-  it(`should set the timer,fetch token 3 times, and log user out due to refresh token expiration`, 
+  it(`should repeatedly reset the timer,fetching token 3 times, and log user out due to refresh token expiration`, 
   fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const loginRequest = httpTestingController.expectOne({
