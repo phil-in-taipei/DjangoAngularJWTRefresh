@@ -70,7 +70,8 @@ export class AuthService {
     this.loginErrorListener.next(false);
   }
 
-  private fetchRefreshToken() {
+  // public for testing purposes
+  public fetchRefreshToken() {
     //let bytes  = CryptoJS.AES.decrypt(this.refresh, this.encryptKey);
     //let refresh = bytes.toString(CryptoJS.enc.Utf8);
     let refresh = this.refresh;

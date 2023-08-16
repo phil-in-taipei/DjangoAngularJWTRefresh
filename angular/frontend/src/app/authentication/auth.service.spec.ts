@@ -165,21 +165,25 @@ fdescribe('AuthService', () => {
       url:`${environment.apiUrl}/auth/jwt/create`,
     });
 
+    loginRequest.flush(httpTokensResponse);
+
+    tick(environment.authTimerAmount);
 
     const refreshTokenRequest = httpTestingController.expectOne({
       method: 'POST',
       url:`${environment.apiUrl}/auth/jwt/refresh`,
     });
 
-    loginRequest.flush(httpTokensResponse);
     refreshTokenRequest.flush(httpTokenRefreshResponse1);
 
-    expect(localStorage.setItem).toHaveBeenCalledTimes(5); 
+    // the 4 variables (token, tokenExpTime, refresh, refreshExpTime)
+    // will be saved twice -- once on login, and a second time after timer expires
+    // and mock api call is made to fetch another token
+    expect(localStorage.setItem).toHaveBeenCalledTimes(8); 
 
     expect(localStorage.getItem('refresh')).toEqual(httpTokensResponse['refresh']);
     expect(localStorage.getItem('token')).toEqual(httpTokenRefreshResponse1['access']); 
-    //tick(environment.authTimerAmount + 5);
     
-    flush();
+    tick(environment.authTimerAmount + 5);
   }));
 });
