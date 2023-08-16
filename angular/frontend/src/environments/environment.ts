@@ -7,8 +7,10 @@ export const environment = {
   apiUrl: "http://localhost:8000",
   authTimerAmount: 50000, //(50 seconds)
   tokenRefreshHoursAmount: 0,
-  tokenRefreshMinsAmount: 2,
-  tokenRefreshSecondsAmount: 50,
+  tokenRefreshMinsAmount: 3,
+  tokenRefreshSecondsAmount: 30,
+  tokenMinsAmount: 0,
+  tokenSecondsAmount: 50,
 };
 
 /*

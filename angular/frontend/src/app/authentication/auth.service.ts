@@ -162,8 +162,8 @@ export class AuthService {
           console.log('this is now:')
           console.log(dtToken);
           console.log('this is when the token will expire...');
-          //dtToken.setMinutes(dtToken.getMinutes() + 4);
-          dtToken.setSeconds(dtToken.getSeconds() + 50);
+          dtToken.setMinutes(dtToken.getMinutes() + environment.tokenMinsAmount);
+          dtToken.setSeconds(dtToken.getSeconds() + environment.tokenSecondsAmount);
           console.log(dtToken);
           this.tokenExpTime = dtToken;
           const dtRfrshTken:Date = new Date();

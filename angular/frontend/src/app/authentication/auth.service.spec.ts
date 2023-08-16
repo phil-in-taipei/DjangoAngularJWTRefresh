@@ -6,7 +6,8 @@ import { HttpTestingController, HttpClientTestingModule
    } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { httpTokensResponse, 
-  httpTokenRefreshResponse1 } from '../test-data/authentication-tests/authentication-data';
+  httpTokenRefreshResponse1, httpTokenRefreshResponse2, 
+  httpTokenRefreshResponse3 } from '../test-data/authentication-tests/authentication-data';
 import { UserProfileComponent } from '../authenticated-user/user-profile/user-profile.component';
 
 
@@ -157,7 +158,7 @@ fdescribe('AuthService', () => {
     flush();
   }));
 
-  fit(`should set the timer and fetch a replacement token after ${environment.authTimerAmount} secs`, 
+  it(`should set the timer and fetch a replacement token after ${environment.authTimerAmount} secs`, 
   fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const loginRequest = httpTestingController.expectOne({
@@ -185,5 +186,150 @@ fdescribe('AuthService', () => {
     expect(localStorage.getItem('token')).toEqual(httpTokenRefreshResponse1['access']); 
     
     tick(environment.authTimerAmount + 5);
+  }));
+
+  it(`should set the timer and fetch a 2nd replacement token after ${environment.authTimerAmount * 2} secs`, 
+  fakeAsync(() => {
+    service.login('testusername', 'testpassword');
+    const loginRequest = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
+
+    loginRequest.flush(httpTokensResponse);
+
+    tick(environment.authTimerAmount);
+
+    const refreshTokenRequest = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/refresh`,
+    });
+
+    refreshTokenRequest.flush(httpTokenRefreshResponse1);
+
+    tick(environment.authTimerAmount * 2 + 5);
+
+    const refreshTokenRequest2 = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/refresh`,
+    });
+
+    refreshTokenRequest2.flush(httpTokenRefreshResponse2);
+
+    // the 4 variables (token, tokenExpTime, refresh, refreshExpTime)
+    // will be saved three times -- once on login, and a 2 mores times after timer expires
+    // and mock api calls are made to fetch refresh tokens
+    expect(localStorage.setItem).toHaveBeenCalledTimes(12); 
+
+    expect(localStorage.getItem('refresh')).toEqual(httpTokensResponse['refresh']);
+    expect(localStorage.getItem('token')).toEqual(httpTokenRefreshResponse2['access']); 
+    
+    tick(environment.authTimerAmount * 2 + 10);
+  }));
+
+  it(`should set the timer and fetch a 3rd replacement token after ${environment.authTimerAmount * 3} secs`, 
+  fakeAsync(() => {
+    service.login('testusername', 'testpassword');
+    const loginRequest = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
+
+    loginRequest.flush(httpTokensResponse);
+
+    tick(environment.authTimerAmount);
+
+    const refreshTokenRequest = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/refresh`,
+    });
+
+    refreshTokenRequest.flush(httpTokenRefreshResponse1);
+
+    tick(environment.authTimerAmount * 2 + 1);
+
+    const refreshTokenRequest2 = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/refresh`,
+    });
+
+    refreshTokenRequest2.flush(httpTokenRefreshResponse2);
+
+    tick(environment.authTimerAmount * 3 + 2);
+
+    const refreshTokenRequest3 = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/refresh`,
+    });
+
+    refreshTokenRequest3.flush(httpTokenRefreshResponse3);
+
+    // the 4 variables (token, tokenExpTime, refresh, refreshExpTime)
+    // will be saved four times -- once on login, and a 2 mores times after timer expires
+    // and mock api calls are made to fetch refresh tokens
+    expect(localStorage.setItem).toHaveBeenCalledTimes(16); 
+
+    expect(localStorage.getItem('refresh')).toEqual(httpTokensResponse['refresh']);
+    expect(localStorage.getItem('token')).toEqual(httpTokenRefreshResponse3['access']); 
+    
+    tick(environment.authTimerAmount * 3 + 10);
+  }));
+
+  it(`should set the timer,fetch token 3 times, and log user out due to refresh token expiration`, 
+  fakeAsync(() => {
+    service.login('testusername', 'testpassword');
+    const loginRequest = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
+
+    loginRequest.flush(httpTokensResponse);
+
+    tick(environment.authTimerAmount);
+
+    const refreshTokenRequest = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/refresh`,
+    });
+
+    refreshTokenRequest.flush(httpTokenRefreshResponse1);
+
+    tick(environment.authTimerAmount * 2 + 1);
+
+    const refreshTokenRequest2 = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/refresh`,
+    });
+
+    refreshTokenRequest2.flush(httpTokenRefreshResponse2);
+
+    tick(environment.authTimerAmount * 3 + 2);
+
+    const refreshTokenRequest3 = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/refresh`,
+    });
+
+    refreshTokenRequest3.flush(httpTokenRefreshResponse3);
+      
+    tick(environment.authTimerAmount * 3 + 10);
+
+
+        // the 4 variables (token, tokenExpTime, refresh, refreshExpTime)
+    // will be saved four times -- once on login, and a 2 mores times after timer expires
+    // and mock api calls are made to fetch refresh tokens
+    expect(localStorage.setItem).toHaveBeenCalledTimes(16); 
+
+
+    // the items are no longer in local storage
+    expect(localStorage.getItem('refresh')).toEqual(null);
+    expect(localStorage.getItem('token')).toEqual(null); 
+    expect(localStorage.getItem('refreshExpiration')).toEqual(null); 
+    expect(localStorage.getItem('expiration')).toEqual(null); 
+
+    // user has been logged out
+    expect(service.getIsAuth()).toBe(false);
+  
+    flush();
   }));
 });
