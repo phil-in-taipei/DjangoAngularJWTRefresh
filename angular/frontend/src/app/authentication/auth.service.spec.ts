@@ -1,6 +1,7 @@
 import { TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpTestingController, HttpClientTestingModule
    } from '@angular/common/http/testing';
@@ -139,7 +140,26 @@ fdescribe('AuthService', () => {
     expect(service.getIsAuth()).toBe(true);
 
     flush();
+  }));
 
+  it('should enable auth status listener observable to return true upon successful login', 
+    fakeAsync(() => {
+    let userIsAuthenticated = false;
+    const authListenerSubs$: Subscription = service.getAuthStatusListener()
+      .subscribe(isAuthenticated => {
+        userIsAuthenticated = isAuthenticated;
+        });
+    service.login('testusername', 'testpassword');
+    const request = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
+
+    request.flush(httpTokensResponse);
+
+    expect(userIsAuthenticated).toBe(true);
+
+    flush();
   }));
 
   it('should be navigate to user landing page upon successful login', fakeAsync(() => {
@@ -327,6 +347,63 @@ fdescribe('AuthService', () => {
     // user has been logged out
     expect(service.getIsAuth()).toBe(false);
   
+    flush();
+  }));
+
+  it(`should redirect the router to the login page after logging out`, 
+      fakeAsync(() => {
+    service.logout();
+    expect(testRouter.navigate).toHaveBeenCalledWith(['/']);
+    flush();
+  }));
+
+  it(`should set authentication status to false after logging out`, 
+      fakeAsync(() => {
+    service.logout();
+    // user has been logged out
+    expect(service.getIsAuth()).toBe(false);
+    flush();
+  }));
+
+  fit(`should clear all items from local storage after logging out`, 
+      fakeAsync(() => {
+    // mock setting tokens and expiration times in local storage
+
+    // for testing the token expires in 50 seconds, in production 4 mins 50 secs
+    const dtToken:Date = new Date();
+    dtToken.setSeconds(dtToken.getSeconds() + environment.tokenSecondsAmount);
+    const dtRfrshTken:Date = new Date();
+
+    // for testing, the refresh expires in 2 mins and 50 seconds
+    // in production, the refresh expires in 23 hours and 45 minutes
+    dtRfrshTken.setMinutes(dtRfrshTken.getMinutes() + environment.tokenRefreshMinsAmount);
+    dtRfrshTken.setSeconds(dtRfrshTken.getSeconds() + environment.tokenRefreshSecondsAmount);
+    localStorage.setItem('refresh', httpTokensResponse.refresh);
+    localStorage.setItem('refreshExpiration', dtRfrshTken.toISOString());
+    localStorage.setItem('token', httpTokensResponse.access);
+    localStorage.setItem('expiration', dtToken.toISOString());
+
+    service.logout();
+
+    // after logout, the items are no longer in local storage
+    expect(localStorage.getItem('refresh')).toEqual(null);
+    expect(localStorage.getItem('token')).toEqual(null); 
+    expect(localStorage.getItem('refreshExpiration')).toEqual(null); 
+    expect(localStorage.getItem('expiration')).toEqual(null); 
+    flush();
+  }));
+
+  it('should enable auth status listener observable to return false after logout is called', 
+    fakeAsync(() => {
+    let userIsAuthenticated = true;
+    const authListenerSubs$: Subscription = service.getAuthStatusListener()
+      .subscribe(isAuthenticated => {
+        userIsAuthenticated = isAuthenticated;
+        });
+
+    service.logout();
+    expect(userIsAuthenticated).toBe(false);
+
     flush();
   }));
 });

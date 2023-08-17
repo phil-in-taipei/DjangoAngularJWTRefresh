@@ -10,6 +10,7 @@ import { UnauthenticatedHeaderComponent } from './unauthenticated-layout/unauthe
 import { UnauthenticatedFooterComponent } from './unauthenticated-layout/unauthenticated-footer/unauthenticated-footer.component';
 import { ContactComponent } from './contact/contact.component';
 import { InformationComponent } from './information/information.component';
+//import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { InformationComponent } from './information/information.component';
     UnauthenticatedFooterComponent,
     ContactComponent,
     InformationComponent,
+   // HomeComponent,
   ],
   imports: [
     BrowserModule,
