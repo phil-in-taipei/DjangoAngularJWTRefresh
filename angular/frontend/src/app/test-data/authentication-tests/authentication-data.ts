@@ -1,4 +1,5 @@
 import { AuthLoginModel, AuthLoginResponseModel, 
+    AuthLoginResponseFailureModel,
     AuthTokenRefreshResponseModel } from '../../models/auth-login.model';
 import { AuthDataModel } from '../../models/auth-data.model';
 
@@ -14,6 +15,10 @@ export const loginData: AuthLoginModel = {
     username: 'testusername',
     password: 'testpassword',
   };
+
+export const httpTokenResponseFailure: AuthLoginResponseFailureModel = {
+    "detail": "No active account found with the given credentials",
+}
 
 export const httpTokensResponse: AuthLoginResponseModel = {
     "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY5MjA4Njg3NiwiaWF0IjoxNjkyMDg2Njk2LCJqdGkiOiJmYjgzNDVkMDZmN2U0MjliOGZhYmFkNzc2ZGJjZjUzOCIsInVzZXJfaWQiOjExfQ.msQd1NtLTbngWk2IIS8w6H1JSGP1C_vFcVIhOBpQcdM",

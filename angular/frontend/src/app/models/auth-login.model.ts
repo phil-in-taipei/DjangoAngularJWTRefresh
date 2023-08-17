@@ -8,6 +8,10 @@ export interface AuthLoginResponseModel {
     access: string;
 };
 
+export interface AuthLoginResponseFailureModel {
+  detail: string;
+};
+
 export interface AuthTokenRefreshResponseModel {
   access: string;
 };

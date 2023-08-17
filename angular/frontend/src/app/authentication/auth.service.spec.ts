@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { HttpTestingController, HttpClientTestingModule
    } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { httpTokensResponse, 
+import { httpTokensResponse, httpTokenResponseFailure,
   httpTokenRefreshResponse1, httpTokenRefreshResponse2, 
   httpTokenRefreshResponse3 } from '../test-data/authentication-tests/authentication-data';
 import { UserProfileComponent } from '../authenticated-user/user-profile/user-profile.component';
@@ -84,6 +84,24 @@ fdescribe('AuthService', () => {
 
     flush();
 
+  }));
+
+  it('should enable login error listener observable to return true after upon' + 
+    ' unsuccessful login attempt with incorrect data', 
+    fakeAsync(() => {
+    let isLoginError = false;
+    const authErrorListenerSubs$: Subscription = service.getLoginErrorListener()
+      .subscribe(isError => {
+        isLoginError = isError;
+        });
+    service.login('incorrectusername', 'incorrectpassword');
+    const request = httpTestingController.expectOne({
+      method: 'POST',
+      url:`${environment.apiUrl}/auth/jwt/create`,
+    });
+    request.flush(httpTokenResponseFailure, { status: 400, statusText: 'Unauthorized' });
+    expect(isLoginError).toBe(true);
+    flush();
   }));
 
   it('should save the token, refresh token, and expiration times in local storage after login', 
@@ -365,7 +383,7 @@ fdescribe('AuthService', () => {
     flush();
   }));
 
-  fit(`should clear all items from local storage after logging out`, 
+  it(`should clear all items from local storage after logging out`, 
       fakeAsync(() => {
     // mock setting tokens and expiration times in local storage
 
