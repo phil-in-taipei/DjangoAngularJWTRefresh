@@ -1,4 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { select, Store } from '@ngrx/store';
+import { Observable, async, of, map, Subscription, Subject } from "rxjs";
+
+import { AppState } from 'src/app/reducers';
+import { selectUserProfile } from './../user.selectors';
+import { UserProfileModel } from '../../models/user-profile.model';
 
 @Component({
   selector: 'app-user-profile',
@@ -7,9 +13,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserProfileComponent implements OnInit {
 
-  constructor() { }
+  usrProfile$: Observable<UserProfileModel|undefined>;
+
+  constructor(private store: Store<AppState>) { }
 
   ngOnInit(): void {
+    console.log('initializing the profile component now...')
+    this.usrProfile$ = this.store.pipe(select(selectUserProfile));
   }
-
 }

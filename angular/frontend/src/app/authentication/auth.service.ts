@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 //import * as CryptoJS from 'crypto-js';
+import {Store} from '@ngrx/store';
+import { AppState } from './../reducers';
+import { UserProfileCleared } from './../authenticated-user/user.actions';
 import { environment } from '../../environments/environment';
 import { AuthDataModel } from '../models/auth-data.model';
 import { AuthLoginModel, AuthLoginResponseModel, 
@@ -24,7 +27,8 @@ export class AuthService {
   private loginErrorListener = new Subject<boolean>();
  // private encryptKey = 'lzzuciihtdffhbdwpjablrtvlotwbpxzgadaaqzerghvwaveui';
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, 
+    private store: Store<AppState>) { }
 
   autoAuthUser() {
     const authInformation = this.getAuthData();
@@ -199,6 +203,7 @@ export class AuthService {
     localStorage.removeItem('refresh');
     localStorage.removeItem('refreshExpiration');
     localStorage.removeItem('userId');
+    this.store.dispatch(new UserProfileCleared());
     this.router.navigate(['/']);
   }
 
