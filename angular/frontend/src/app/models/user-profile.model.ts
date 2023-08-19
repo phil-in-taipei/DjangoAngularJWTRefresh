@@ -12,7 +12,6 @@ export interface UserModel {
   }
   
   export interface UserProfileEditModel {
-    id: number;
     contact_email: string;
     surname: string;
     given_name: string;

@@ -13,6 +13,7 @@ import { UserProfileModel } from '../../models/user-profile.model';
 })
 export class UserProfileComponent implements OnInit {
 
+  showForm:boolean = false;
   usrProfile$: Observable<UserProfileModel|undefined>;
 
   constructor(private store: Store<AppState>) { }
@@ -20,5 +21,17 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     console.log('initializing the profile component now...')
     this.usrProfile$ = this.store.pipe(select(selectUserProfile));
+  }
+
+  toggleForm() {
+    if (this.showForm) {
+      this.showForm = false;
+    } else {
+      this.showForm = true;
+    }
+  }
+
+  closeFormHander($event: boolean) {
+    this.showForm = $event;
   }
 }
