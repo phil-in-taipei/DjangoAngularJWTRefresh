@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms'
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { UserRegistrationModel, 
   UserRegistrationResponseModel } from '../models/user-registration.model';
@@ -15,9 +15,24 @@ export class RegistrationComponent implements OnInit {
 
   constructor(private registrationService: RegistrationService) { }
 
-  userResistrationData: UserRegistrationModel;
+  isFormPasswordsError = false;
 
-  registrationResponse$: Observable<UserRegistrationResponseModel|undefined>;
+  userRegistrationData: UserRegistrationModel = {
+    username:'',
+    password:'',
+    re_password:'',
+    profile: {
+      surname:'',
+      given_name:'',
+      contact_email: ''
+    }
+
+  };
+
+  registrationResponse$: Observable<
+    UserRegistrationResponseModel|undefined> = of(undefined);
+
+  passwordErrorMsg:string = 'The passwords must match!'
 
   ngOnInit(): void {
 
@@ -31,15 +46,32 @@ export class RegistrationComponent implements OnInit {
       console.log(form.errors);
       return;
     }
+    if (form.value.password !== form.value.re_password) {
+      console.log('passwords do not match invalid')
+      this.isFormPasswordsError = true;
+      form.reset();
+      return;
+    }
     console.log('valid!')
-    this.userResistrationData.username = form.value.username;
-    this.userResistrationData.password = form.value.password;
-    this.userResistrationData.re_password = form.value.re_password;
-    this.userResistrationData.profile.contact_email = form.value.contact_email;
-    this.userResistrationData.profile.surname = form.value.surname;
-    this.userResistrationData.profile.given_name = form.value.given_name
+    console.log(form.value.username);
+    this.userRegistrationData.username = form.value.username;
+    this.userRegistrationData.password = form.value.password;
+    this.userRegistrationData.re_password = form.value.re_password;
+    this.userRegistrationData.profile.contact_email = form.value.contact_email;
+    this.userRegistrationData.profile.surname = form.value.surname;
+    this.userRegistrationData.profile.given_name = form.value.given_name
+    console.log(this.userRegistrationData);
     this.registrationResponse$ = this.registrationService
-      .submitUserRegistration(this.userResistrationData);
+      .submitUserRegistration(this.userRegistrationData);
     form.reset();
+  }
+
+
+  onClearRegistrationFormError() {
+    this.isFormPasswordsError = false;
+  }
+
+  onClearRegistrationMessage() {
+    this.registrationResponse$ = of(undefined);
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+
 
 import { environment } from '../../environments/environment';
 import { UserRegistrationModel, 
@@ -11,8 +12,8 @@ import { UserRegistrationModel,
 })
 export class RegistrationService {
 
-  constructor(private http: HttpClient, 
-    private router: Router) { }
+
+  constructor(private http: HttpClient) { }
 
   submitUserRegistration(userRegistration: UserRegistrationModel) {
       return this.http.post<UserRegistrationResponseModel>(
