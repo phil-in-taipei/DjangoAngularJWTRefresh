@@ -18,6 +18,7 @@ import { UnauthenticatedHeaderComponent } from './unauthenticated-layout/unauthe
 import { UnauthenticatedFooterComponent } from './unauthenticated-layout/unauthenticated-footer/unauthenticated-footer.component';
 import { ContactComponent } from './contact/contact.component';
 import { InformationComponent } from './information/information.component';
+import { RegistrationComponent } from './registration/registration.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { InformationComponent } from './information/information.component';
     UnauthenticatedFooterComponent,
     ContactComponent,
     InformationComponent,
+    RegistrationComponent,
   ],
   imports: [
     BrowserModule,
