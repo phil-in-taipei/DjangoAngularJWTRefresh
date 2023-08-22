@@ -12,7 +12,7 @@ import { httpTokensResponse, httpTokenResponseFailure,
 import { UserProfileComponent } from '../authenticated-user/user-profile/user-profile.component';
 
 
-fdescribe('AuthService', () => {
+describe('AuthService', () => {
   let testRouter: Router; 
   let service: AuthService;
   let httpTestingController: HttpTestingController;
@@ -39,7 +39,7 @@ fdescribe('AuthService', () => {
 
     spyOn(localStorage, 'getItem')
      .and.callFake(mockLocalStorage.getItem);
-   spyOn(localStorage, 'setItem')
+    spyOn(localStorage, 'setItem')
      .and.callFake(mockLocalStorage.setItem);
     spyOn(localStorage, 'removeItem')
      .and.callFake(mockLocalStorage.removeItem);
@@ -194,7 +194,7 @@ fdescribe('AuthService', () => {
   }));
 
   it(`should reset the timer and fetch a replacement token after ${environment.authTimerAmount} secs`, 
-  fakeAsync(() => {
+    fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const loginRequest = httpTestingController.expectOne({
       method: 'POST',
@@ -224,7 +224,7 @@ fdescribe('AuthService', () => {
   }));
 
   it(`should reset the timer and fetch a 2nd replacement token after ${environment.authTimerAmount * 2} secs`, 
-  fakeAsync(() => {
+    fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const loginRequest = httpTestingController.expectOne({
       method: 'POST',
@@ -263,7 +263,7 @@ fdescribe('AuthService', () => {
   }));
 
   it(`should reset the timer and fetch a 3rd replacement token after ${environment.authTimerAmount * 3} secs`, 
-  fakeAsync(() => {
+    fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const loginRequest = httpTestingController.expectOne({
       method: 'POST',
@@ -311,7 +311,7 @@ fdescribe('AuthService', () => {
   }));
 
   it(`should repeatedly reset the timer,fetching token 3 times, and log user out due to refresh token expiration`, 
-  fakeAsync(() => {
+    fakeAsync(() => {
     service.login('testusername', 'testpassword');
     const loginRequest = httpTestingController.expectOne({
       method: 'POST',
