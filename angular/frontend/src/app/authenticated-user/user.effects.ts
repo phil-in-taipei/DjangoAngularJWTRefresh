@@ -38,10 +38,13 @@ import { UserProfileActionTypes, UserProfileSubmitted,
             ofType<UserProfileSubmitted>(UserProfileActionTypes.UserProfileSubmitted),
             mergeMap(action => this.userService.editUserProfile(action.payload.submissionForm)
                 .pipe(
-                    map(usrProfile => new UserProfileSaved({ usrProfile }))
+                    map(usrProfile => new UserProfileSaved({ usrProfile })),
+                    catchError(err => {
+                      return throwError(() => err);
+                    })
                 ),
-                )
-            )
+              )
+          )
       });
 
       constructor(private actions$: Actions, private userService: UserService,

@@ -4,12 +4,11 @@ import { UserProfileModel,
 
 
 export enum UserProfileActionTypes {
-    UserProfileCleared = '[User Profile] User Profile Cleared',
+    UserProfileCleared = '[Auth Service Logout] User Profile Cleared',
     UserProfileLoaded = '[User Profile API] User Profile Loaded',
-    UserProfileRequested = '[User Profile Page] User Profile Requested',
+    UserProfileRequested = '[Authenticated User Component Page] User Profile Requested',
     UserProfileSaved = '[User Profile Edit Form] User Profile Saved',
     UserProfileSubmitted = '[User Profile Page] Edited Profile Submitted',
-
 }
 
 export class UserProfileCleared implements Action {
