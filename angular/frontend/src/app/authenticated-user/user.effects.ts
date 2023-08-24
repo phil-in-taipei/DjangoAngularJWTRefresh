@@ -22,13 +22,13 @@ import { UserProfileActionTypes, UserProfileSubmitted,
             ofType<UserProfileRequested>(UserProfileActionTypes.UserProfileRequested),
             withLatestFrom(this.store.pipe(select(selectUserProfile))),
             filter(([action, userProfileLoaded]) => !userProfileLoaded),
-            mergeMap(action => this.userService.fetchUserProfile()),
-            map(usrProfile => new UserProfileLoaded({ usrProfile }),
-            catchError(err => {
-                console.log('Error loading user info: ', err);
-                return throwError(() => err);
-              })
-            )
+            mergeMap(action => this.userService.fetchUserProfile()//),
+              .pipe(
+                map(usrProfile => new UserProfileLoaded({ usrProfile })),
+                catchError(err => {
+                  return throwError(() => err);
+                })
+              ))
           )
       });
 
