@@ -4,8 +4,8 @@ import { map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { AuthService } from '../authentication/auth.service';
-import { UserProfileModel, UserProfileEditModel, 
-  UserModel } from '../models/user-profile.model'; 
+import { UserProfileModel, 
+  UserProfileEditModel } from '../models/user-profile.model'; 
 
 @Injectable({
   providedIn: 'root'

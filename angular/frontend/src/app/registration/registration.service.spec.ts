@@ -10,7 +10,7 @@ import { userRegistrationData,
   httpRegistrationResponseFailure2 } 
   from '../test-data/registration-tests/registration-data';
 
-fdescribe('RegistrationService', () => {
+describe('RegistrationService', () => {
   let service: RegistrationService;
   let httpTestingController: HttpTestingController;
 
@@ -114,12 +114,13 @@ fdescribe('RegistrationService', () => {
 
   }));
 
-  it('should handle error due to network error', () => {
-    service.submitUserRegistration(userRegistrationData).subscribe(
-      () => {},
-      error => {
-        expect(error).toBeTruthy();
-      }
+  it('should handle error due to network error when submitting user registration', 
+    () => {
+      service.submitUserRegistration(userRegistrationData).subscribe(
+        () => {},
+        error => {
+          expect(error).toBeTruthy();
+        }
     );
   
     const request = httpTestingController.expectOne({
@@ -128,7 +129,6 @@ fdescribe('RegistrationService', () => {
     });
     request.error(new ErrorEvent('network error'));
   
-    httpTestingController.verify();
   });
 
   afterEach(() => {
