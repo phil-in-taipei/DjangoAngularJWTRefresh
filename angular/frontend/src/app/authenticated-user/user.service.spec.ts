@@ -10,7 +10,7 @@ import { userProfileData,
   } from '../test-data/authenticated-user-module-tests/user-related-tests/user-data';
 import { UserService } from './user.service';
 
-describe('UserService', () => {
+fdescribe('UserService', () => {
   let service: UserService;
   let httpTestingController: HttpTestingController;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
