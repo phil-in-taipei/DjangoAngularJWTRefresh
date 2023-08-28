@@ -17,3 +17,14 @@ export const userProfileEditData: UserProfileEditModel = {
     given_name: "Altered",
     contact_email: "updated@gmx.com"
 }
+
+export const userProfileEdited: UserProfileModel = {
+    id: 1,
+    user: {
+        username: "Test User 1",
+        id: 1
+    },
+    surname: "Edited",
+    given_name: "Altered",
+    contact_email: "updated@gmx.com"
+}
