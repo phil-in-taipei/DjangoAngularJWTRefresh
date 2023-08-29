@@ -1,11 +1,13 @@
 import { TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { EffectsModule } from '@ngrx/effects';
-import { StoreModule, Action, ReducerManager } from '@ngrx/store';
+import { StoreModule, Action, select, Store } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { from, Observable, of, throwError } from 'rxjs';
 import { toArray } from 'rxjs/operators';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { provideMockStore } from '@ngrx/store/testing';
+import { reducers, metaReducers } from '../reducers';
+
 
 
 import { UserEffects } from './user.effects';
@@ -20,26 +22,35 @@ import { UserService } from './user.service';
 import { userProfileReducer } from './user.reducers';
 
 
-describe('UserEffects', () => {
+fdescribe('UserEffects', () => {
     let effects: UserEffects;
     let userServiceSpy: jasmine.SpyObj<UserService>;
-    let reducerManagerSpy: jasmine.SpyObj<ReducerManager>;
+    //let userSelectorSpy: jasmine.SpyObj<typeof select>;
   
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [
-            StoreModule.forRoot({}), 
+            StoreModule.forRoot(reducers, { metaReducers }), 
             StoreModule.forFeature('user', userProfileReducer), 
             EffectsModule.forFeature([UserEffects])],
+        
+            
         providers: [
+            EffectsModule.forRoot([]),
             provideMockStore({
                 initialState: {
                     'user': initialUserProfileState
-                }
+                },
+                selectors: [
+                    {
+                      selector: selectUserProfile,
+                      value: undefined
+                    }
+                  ]
             }),
-            UserEffects,
+    
+            UserEffects, // this also needs an actions spy
             { provide: UserService, useValue: userServiceSpy },
-            { provide: ReducerManager, useValue: reducerManagerSpy },
 
         ]
       });
@@ -47,19 +58,23 @@ describe('UserEffects', () => {
       effects = TestBed.inject(UserEffects);
       userServiceSpy = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
     });
-            /*
+            
     it('should call the UserProfileRequested and UserProfileLoaded actions if there is not user in state', 
         fakeAsync(() => {
 
-        //userServiceSpy.fetchUserProfile.and.returnValue(of(userProfileData));
-        //reducerManagerSpy.addFeature().and.returnValue();
-        //let actualActions: Action[] | undefined;
-        //const expectedActions: Action[] = [new UserProfileRequested(), 
-         //   new UserProfileLoaded({ usrProfile: userProfileData })];
-        //effects.loadUserProfile$.pipe(toArray()).subscribe((actualActions2) => {
-         //   actualActions = actualActions2;
-        //  }, fail);
-        //  expect(actualActions).toEqual(expectedActions);
-    })); */
+        //spyOn<typeof effects, any>(effects,'loadUserProfile$')
+        userServiceSpy.fetchUserProfile.and.returnValue(of(userProfileData));
+        
+        let actualActions: Action[] | undefined;
+        const expectedActions: Action[] = [new UserProfileRequested(), 
+            new UserProfileLoaded({ usrProfile: userProfileData })];
+        //effects.loadUserProfile$.subscribe((result) => {
+        //    expect(result).toBeTruthy();
+        //});
+        effects.loadUserProfile$.pipe(toArray()).subscribe((actualActions2) => {
+            actualActions = actualActions2;
+          }, fail);
+        expect(actualActions).toEqual(expectedActions);
+    }));
 
   });

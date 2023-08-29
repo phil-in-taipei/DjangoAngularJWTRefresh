@@ -1,11 +1,16 @@
-import { stateWithLoadedUser, stateWithRevisedUser } from '../test-data/authenticated-user-module-tests/user-related-tests/user-state';
+import { stateWithLoadedUser, 
+         stateWithRevisedUser 
+} from '../test-data/authenticated-user-module-tests/user-related-tests/user-state';
 import { userProfileReducer, initialUserProfileState } from './user.reducers';
-import { userProfileData, userProfileEdited } from '../test-data/authenticated-user-module-tests/user-related-tests/user-data';
+import { userProfileData, 
+        userProfileEdited 
+} from '../test-data/authenticated-user-module-tests/user-related-tests/user-data';
 
-import { UserProfileCleared, UserProfileLoaded, UserProfileSaved } from './user.actions';
+import { UserProfileCleared, UserProfileLoaded, 
+    UserProfileSaved } from './user.actions';
 
 
-fdescribe('userProfileReducer', () => {
+describe('userProfileReducer', () => {
     it('returns an initial state when cleared', () => {
         const state = userProfileReducer(initialUserProfileState, new UserProfileCleared());
         expect(state).toEqual(initialUserProfileState);
