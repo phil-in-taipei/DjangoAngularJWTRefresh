@@ -22,7 +22,7 @@ import { UserProfileActionTypes, UserProfileSubmitted,
             ofType<UserProfileRequested>(UserProfileActionTypes.UserProfileRequested),
             withLatestFrom(this.store.pipe(select(selectUserProfile))),
             filter(([action, userProfileLoaded]) => !userProfileLoaded),
-            mergeMap(action => this.userService.fetchUserProfile()//),
+            mergeMap(action => this.userService.fetchUserProfile()
               .pipe(
                 map(usrProfile => new UserProfileLoaded({ usrProfile })),
                 catchError(err => {
