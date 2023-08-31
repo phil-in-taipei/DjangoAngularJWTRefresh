@@ -10,7 +10,7 @@ import { UserProfileCleared, UserProfileLoaded,
     UserProfileSaved } from './user.actions';
 
 
-fdescribe('userProfileReducer', () => {
+describe('userProfileReducer', () => {
     it('returns an initial state when cleared', () => {
         const state = userProfileReducer(initialUserProfileState, new UserProfileCleared());
         expect(state).toEqual(initialUserProfileState);

@@ -8,7 +8,7 @@ import { Actions, createEffect, ofType, } from '@ngrx/effects';
 import { provideMockStore } from '@ngrx/store/testing';
 import { reducers, metaReducers } from '../reducers';
 
-import { EffectsTestingModule, EffectsRunner } from '@ngrx/effects/testing';
+//import { EffectsTestingModule, EffectsRunner } from '@ngrx/effects/testing';
 
 import { UserEffects } from './user.effects';
 import { initialUserProfileState, UserProfileState } from './user.reducers';
@@ -57,7 +57,7 @@ fdescribe('UserEffects', () => {
 
         ]
       });
-      runner = TestBed.inject(EffectsRunner);
+      //runner = TestBed.inject(EffectsRunner);
       effects = TestBed.inject(UserEffects);
       userService = TestBed.inject(UserService);// as jasmine.SpyObj<UserService>;
     });
