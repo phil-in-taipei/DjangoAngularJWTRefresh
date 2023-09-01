@@ -11,7 +11,7 @@
       </div>
       <h1>Login</h1>
       <div>
-        <form (submit)="onLogin(loginForm)" #loginForm="ngForm">
+        <form (submit)="onLogin(loginForm)" #loginForm="ngForm" data-testid="login-form">
           <div>
             <label>Username</label>
             <input
@@ -45,8 +45,10 @@
           </div>
           <br />
           <div>
-            <button class="btn btn-outline-secondary" type="submit"
-            >Login</button>
+            <button class="btn btn-outline-secondary" 
+              type="submit" data-testid="login-submit">
+              Login
+            </button>
           </div>
         </form>
       </div>

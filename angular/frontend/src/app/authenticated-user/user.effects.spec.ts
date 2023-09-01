@@ -23,7 +23,7 @@ import { UserProfileModel,
   UserProfileEditModel } from '../models/user-profile.model';
 
 
-fdescribe('UserEffects', () => {
+describe('UserEffects', () => {
     let effects: UserEffects;
     let userService: UserService;
   
