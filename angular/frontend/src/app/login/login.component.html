@@ -23,6 +23,7 @@
             minlength="4"
             ngModel
             placeholder="Username"
+            data-testid="username"
             #username="ngModel"
           >
           <div *ngIf="password.touched && username.invalid">Please enter a username.</div>
@@ -39,6 +40,7 @@
             ngModel
             required
             placeholder="Password"
+            data-testid="password"
             #password="ngModel"
             >
           <div *ngIf="password.touched && password.invalid">Please enter a password.</div>

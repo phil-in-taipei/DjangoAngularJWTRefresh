@@ -17,12 +17,14 @@ describe('userProfileReducer', () => {
     });
 
     it('returns the state with a user profile and indicates that the profile has been loaded', () => {
-        const state = userProfileReducer(initialUserProfileState, new UserProfileLoaded({ usrProfile: userProfileData}));
+        const state = userProfileReducer(initialUserProfileState, 
+            new UserProfileLoaded({ usrProfile: userProfileData}));
         expect(state).toEqual(stateWithLoadedUser);
     });
     
     it('returns the state with a user profile and indicates that the profile has been loaded after editing', () => {
-        const state = userProfileReducer(stateWithLoadedUser, new UserProfileSaved({ usrProfile: userProfileEdited}));
+        const state = userProfileReducer(stateWithLoadedUser, 
+            new UserProfileSaved({ usrProfile: userProfileEdited}));
         expect(state).toEqual(stateWithRevisedUser);
     });   
 });
