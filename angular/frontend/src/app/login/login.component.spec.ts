@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule, NgForm, NgModel } from '@angular/forms';
 import { Subscription, Subject, of, Observable } from 'rxjs';
 
 import { AuthLoginModel, AuthLoginResponseModel, 
@@ -57,18 +57,31 @@ fdescribe('LoginComponent', () => {
   it('should call the login function with the values entered into the form onLogin', 
     fakeAsync(() => {
       spyOn(component, 'onLogin').and.callThrough(); 
-      setFieldValue(fixture, 'username', 'testusername');
-      setFieldValue(fixture, 'password', 't');
-      console.log('now clicking the button');
+      let usernameFormElement = findEl(fixture, 'username')//fixture.nativeElement.querySelector('input#username');
+      console.log('this is the form el:');
+      console.log(usernameFormElement.nativeElement);
+      usernameFormElement.nativeElement.value = 'testusername'
+      usernameFormElement.nativeElement.dispatchEvent(new Event('input'));
+      let passwordFormElement = findEl(fixture, 'password')
+      passwordFormElement.nativeElement.value = 'testpassword'
+      passwordFormElement.nativeElement.dispatchEvent(new Event('input'));
+
+      tick(1000);
+      fixture.detectChanges();
+      console.log('this is the form el after filling in value:');
+      console.log(usernameFormElement.nativeElement.value);
+      console.log(usernameFormElement);
+      console.log(passwordFormElement.nativeElement.value);
+      console.log(passwordFormElement);
+
       findEl(fixture, 'login-form').triggerEventHandler('login-submit', {});
       tick(1000);
       fixture.detectChanges();
       //expect(authService.login).toHaveBeenCalledWith(
       //  {username: 'testusername', password: 'testpassword'}
       //);
-      const passwordEl = findEl(fixture, 'password');
-      console.log(passwordEl);
-      //expect(passwordEl.attributes.type).toBe('password');
-      //expect(authService.login).toHaveBeenCalled();
+      //const passwordEl = findEl(fixture, 'password');
+      //console.log(passwordEl);
+      expect(authService.login).toHaveBeenCalled();
   }));
 });

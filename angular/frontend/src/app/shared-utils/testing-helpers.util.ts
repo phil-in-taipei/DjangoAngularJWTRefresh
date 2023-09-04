@@ -147,10 +147,14 @@ export function setFieldElementValue(
   element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
   value: string,
 ): void {
+  console.log('this is the element:');
+  console.log(element);
   element.value = value;
   // Dispatch an `input` or `change` fake event
   // so Angular form bindings take notice of the change.
-  const isSelect = element instanceof HTMLSelectElement;
+  const isSelect: boolean = element instanceof HTMLSelectElement;
+  console.log('is select? -- ' + isSelect);
+  
   dispatchFakeEvent(element, isSelect ? 'change' : 'input', isSelect ? false : true);
 }
 
