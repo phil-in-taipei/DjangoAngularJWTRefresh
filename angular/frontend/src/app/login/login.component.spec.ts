@@ -22,12 +22,12 @@ fdescribe('LoginComponent', () => {
 
 
   beforeEach(async () => {
-    let mockAuthService = jasmine.createSpyObj(['clearLoginError', 'getIsLoginError', 
+    let mockAuthService:AuthService  = jasmine.createSpyObj(['clearLoginError', 'getIsLoginError', 
     'getLoginErrorListener', 'login']);
     await TestBed.configureTestingModule({
       imports: [FormsModule],
       declarations: [ 
-        NgForm,
+        //NgForm,
         LoginComponent,
       ],
       providers: [
@@ -54,10 +54,12 @@ fdescribe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  /*
+
   it('should call the login function with the values entered into the form onLogin', 
     fakeAsync(() => {
       spyOn(component, 'onLogin').and.callThrough(); 
-      let usernameFormElement = findEl(fixture, 'username')//fixture.nativeElement.querySelector('input#username');
+      let usernameFormElement = findEl(fixture, 'username');
       console.log('this is the form el:');
       console.log(usernameFormElement.nativeElement);
       usernameFormElement.nativeElement.value = 'testusername'
@@ -83,5 +85,36 @@ fdescribe('LoginComponent', () => {
       //const passwordEl = findEl(fixture, 'password');
       //console.log(passwordEl);
       expect(authService.login).toHaveBeenCalled();
-  }));
+  })); */
+
+  it('should call authService.login when the form is submitted with valid data', () => {   
+    authService.login.and.callThrough();
+    const form = <NgForm>{
+      invalid: false,
+      value: {
+        username: 'testUsername',
+        password: 'testPassword',
+      },
+      reset: () => {}, // Mock the reset method
+    };
+    const formSpy = spyOn(form, 'reset');
+
+    component.onLogin(form);
+
+    expect(authService.login).toHaveBeenCalledWith('testUsername', 'testPassword');
+    expect(formSpy).toHaveBeenCalled();
+  });
+
+  it('should not call authService.login when the form is submitted with invalid data', () => {
+    authService.login.and.callThrough();
+    const form = <NgForm>{
+      invalid: true,
+    };
+
+    component.onLogin(form);
+
+    expect(authService.login).not.toHaveBeenCalled();
+  });
+
+
 });
