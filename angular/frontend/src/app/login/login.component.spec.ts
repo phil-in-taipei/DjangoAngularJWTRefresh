@@ -54,11 +54,11 @@ fdescribe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  /*
+  
 
-  it('should call the login function with the values entered into the form onLogin', 
+  fit('should call the login function with the values entered into the form onLogin', 
     fakeAsync(() => {
-      spyOn(component, 'onLogin').and.callThrough(); 
+      authService.login.and.callThrough();
       let usernameFormElement = findEl(fixture, 'username');
       console.log('this is the form el:');
       console.log(usernameFormElement.nativeElement);
@@ -75,17 +75,20 @@ fdescribe('LoginComponent', () => {
       console.log(usernameFormElement);
       console.log(passwordFormElement.nativeElement.value);
       console.log(passwordFormElement);
+      fixture.detectChanges();
+      expect(passwordFormElement.nativeElement.value).toBe('testpassword');
+      expect(usernameFormElement.nativeElement.value).toBe('testusername');
 
       findEl(fixture, 'login-form').triggerEventHandler('login-submit', {});
-      tick(1000);
-      fixture.detectChanges();
+      //tick(1000);
+      //fixture.detectChanges();
       //expect(authService.login).toHaveBeenCalledWith(
       //  {username: 'testusername', password: 'testpassword'}
       //);
       //const passwordEl = findEl(fixture, 'password');
       //console.log(passwordEl);
-      expect(authService.login).toHaveBeenCalled();
-  })); */
+      //expect(authService.login).toHaveBeenCalled();
+  }));
 
   it('should call authService.login when the form is submitted with valid data', () => {   
     authService.login.and.callThrough();
