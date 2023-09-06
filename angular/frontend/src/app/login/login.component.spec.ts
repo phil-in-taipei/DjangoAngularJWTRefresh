@@ -1,18 +1,14 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { FormsModule, NgForm, NgModel } from '@angular/forms';
-import { Subscription, Subject, of, Observable } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Subject, of } from 'rxjs';
 
-import { AuthLoginModel, AuthLoginResponseModel, 
-  AuthLoginResponseFailureModel } from '../models/auth-login.model';
 import { AuthService } from '../authentication/auth.service';
-import { httpTokenResponseFailure 
-} from '../test-data/authentication-tests/authentication-data';
 import { LoginComponent } from './login.component';
 
-import { click, expectText, findEl,
-  checkField, setFieldValue, 
-} from '../shared-utils/testing-helpers.util';
+import { 
+  findEl, expectContent
+  } from '../shared-utils/testing-helpers.util';
 
 fdescribe('LoginComponent', () => {
   let component: LoginComponent;
@@ -22,18 +18,20 @@ fdescribe('LoginComponent', () => {
 
 
   beforeEach(async () => {
-    let mockAuthService:AuthService  = jasmine.createSpyObj(['clearLoginError', 'getIsLoginError', 
-    'getLoginErrorListener', 'login']);
+    let mockAuthService:AuthService = jasmine.createSpyObj(
+      ['clearLoginError', 'getIsLoginError', 
+       'getLoginErrorListener', 'login']);
+
     await TestBed.configureTestingModule({
       imports: [FormsModule],
-      declarations: [ 
-        //NgForm,
+      declarations: [  
         LoginComponent,
       ],
       providers: [
         { provide: AuthService, useValue: mockAuthService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      // below is so that the nested components don't raise errors
+      schemas: [NO_ERRORS_SCHEMA], 
     })
     .compileComponents();
   });
@@ -44,9 +42,7 @@ fdescribe('LoginComponent', () => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
     authService.getIsLoginError.and.returnValue(false);
-    // still experimenting with how to handle subscriptions/objservables
-    //authService.getLoginErrorListener.and.returnValue(loginErrorListener)
-    authService.getLoginErrorListener.and.returnValue(of(false));
+    authService.getLoginErrorListener.and.returnValue(loginErrorListener)
     fixture.detectChanges();
   });
 
@@ -54,41 +50,74 @@ fdescribe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  
+  it('should display error message if service indicates there has been an error', 
+    fakeAsync(() => {
+    loginErrorListener.next(true);
+    authService.getIsLoginError.and.returnValue(true);
+    authService.getLoginErrorListener.and.returnValue(loginErrorListener);
+    tick(1000);
+    fixture.detectChanges()
+    let errorMsg = findEl(fixture, 'login-error-msg');
+    expect(errorMsg.nativeElement.textContent).toBe('Login Error, Try Again');
+  }));
 
-  fit('should call the login function with the values entered into the form onLogin', 
+  it('should fill in the form with the entered values and call the login function on submit', 
     fakeAsync(() => {
       authService.login.and.callThrough();
+      
       let usernameFormElement = findEl(fixture, 'username');
-      console.log('this is the form el:');
-      console.log(usernameFormElement.nativeElement);
       usernameFormElement.nativeElement.value = 'testusername'
       usernameFormElement.nativeElement.dispatchEvent(new Event('input'));
-      let passwordFormElement = findEl(fixture, 'password')
+      let passwordFormElement = findEl(fixture, 'password');
       passwordFormElement.nativeElement.value = 'testpassword'
       passwordFormElement.nativeElement.dispatchEvent(new Event('input'));
 
       tick(1000);
       fixture.detectChanges();
-      console.log('this is the form el after filling in value:');
-      console.log(usernameFormElement.nativeElement.value);
-      console.log(usernameFormElement);
-      console.log(passwordFormElement.nativeElement.value);
-      console.log(passwordFormElement);
-      fixture.detectChanges();
+
       expect(passwordFormElement.nativeElement.value).toBe('testpassword');
       expect(usernameFormElement.nativeElement.value).toBe('testusername');
+      findEl(fixture, 'login-form').triggerEventHandler('submit', {});
+     
+      fixture.whenStable()
 
-      findEl(fixture, 'login-form').triggerEventHandler('login-submit', {});
-      //tick(1000);
-      //fixture.detectChanges();
-      //expect(authService.login).toHaveBeenCalledWith(
-      //  {username: 'testusername', password: 'testpassword'}
+      // note: there is a bug on github that the values cannot be binded in the test
+     // expect(authService.login).toHaveBeenCalledWith(
+     //   {username: 'testusername', password: 'testpassword'}
       //);
-      //const passwordEl = findEl(fixture, 'password');
-      //console.log(passwordEl);
-      //expect(authService.login).toHaveBeenCalled();
+      
+      expect(authService.login).toHaveBeenCalled();
   }));
+
+  /* below doesn't work because values and changes aren't bound to the form
+     when programatically entering values into the fields in the test
+
+  it('should show an error message when username is too short', 
+    fakeAsync(() => {      
+      let usernameFormElement = findEl(fixture, 'username');
+      usernameFormElement.nativeElement.value = 'testuser'
+      usernameFormElement.nativeElement.dispatchEvent(new Event('input'));
+      let passwordFormElement = findEl(fixture, 'password');
+      passwordFormElement.nativeElement.value = 'testpassword'
+      passwordFormElement.nativeElement.dispatchEvent(new Event('input'));
+
+      tick(1000);
+      fixture.detectChanges();
+
+      usernameFormElement.nativeElement.value = 't';
+      usernameFormElement.nativeElement.touched = true;
+      usernameFormElement.nativeElement.dispatchEvent(new Event('input'));
+
+      tick(1000);
+      fixture.detectChanges();
+      let formEl = findEl(fixture, 'login-form');
+      console.log(formEl.nativeElement);
+      expect(passwordFormElement.nativeElement.value).toBe('testpassword');
+      let usernameErrorMsg = findEl(fixture, 'username-error');
+      console.log(usernameErrorMsg);
+      expect(usernameFormElement.nativeElement.value).toBe('te');
+  })); */
+
 
   it('should call authService.login when the form is submitted with valid data', () => {   
     authService.login.and.callThrough();

@@ -3,7 +3,10 @@
   <div class="color-frame rounded">
     <div class="mt-4 p-5 rounded">
       <div *ngIf='isErrorLogin'>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div data-testid="login-error-msg"
+          class="alert alert-danger alert-dismissible fade show" 
+          role="alert"
+        >
           <h3>Login Error, Try Again</h3>
           <button type="button" class="btn-close" (click)="onClearLoginError()"
           data-bs-dismiss="alert" aria-label="Close"></button>
@@ -26,7 +29,9 @@
             data-testid="username"
             #username="ngModel"
           >
-          <div *ngIf="password.touched && username.invalid">Please enter a username.</div>
+          <div data-testid="username-error" *ngIf="username.touched && username.invalid">
+            Please enter a username.
+          </div>
           </div>
           <br />
           <div>
