@@ -1,13 +1,16 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Subject, of } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { AuthService } from '../authentication/auth.service';
 import { LoginComponent } from './login.component';
+import { 
+  loginData 
+} from '../test-data/authentication-tests/authentication-data';
 
 import { 
-  findEl, expectContent
+  findEl
   } from '../shared-utils/testing-helpers.util';
 
 fdescribe('LoginComponent', () => {
@@ -66,17 +69,17 @@ fdescribe('LoginComponent', () => {
       authService.login.and.callThrough();
       
       let usernameFormElement = findEl(fixture, 'username');
-      usernameFormElement.nativeElement.value = 'testusername'
+      usernameFormElement.nativeElement.value = loginData.username;
       usernameFormElement.nativeElement.dispatchEvent(new Event('input'));
       let passwordFormElement = findEl(fixture, 'password');
-      passwordFormElement.nativeElement.value = 'testpassword'
+      passwordFormElement.nativeElement.value = loginData.password;
       passwordFormElement.nativeElement.dispatchEvent(new Event('input'));
 
       tick(1000);
       fixture.detectChanges();
 
-      expect(passwordFormElement.nativeElement.value).toBe('testpassword');
-      expect(usernameFormElement.nativeElement.value).toBe('testusername');
+      expect(passwordFormElement.nativeElement.value).toBe(loginData.password);
+      expect(usernameFormElement.nativeElement.value).toBe(loginData.username);
       findEl(fixture, 'login-form').triggerEventHandler('submit', {});
      
       fixture.whenStable()
@@ -124,8 +127,8 @@ fdescribe('LoginComponent', () => {
     const form = <NgForm>{
       invalid: false,
       value: {
-        username: 'testUsername',
-        password: 'testPassword',
+        username: loginData.username,
+        password: loginData.password,
       },
       reset: () => {}, // Mock the reset method
     };
@@ -133,7 +136,7 @@ fdescribe('LoginComponent', () => {
 
     component.onLogin(form);
 
-    expect(authService.login).toHaveBeenCalledWith('testUsername', 'testPassword');
+    expect(authService.login).toHaveBeenCalledWith(loginData.username, loginData.password);
     expect(formSpy).toHaveBeenCalled();
   });
 
