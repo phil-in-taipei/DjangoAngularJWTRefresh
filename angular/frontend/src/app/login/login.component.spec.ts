@@ -13,7 +13,7 @@ import {
   findEl
   } from '../shared-utils/testing-helpers.util';
 
-fdescribe('LoginComponent', () => {
+describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let authService: any;
