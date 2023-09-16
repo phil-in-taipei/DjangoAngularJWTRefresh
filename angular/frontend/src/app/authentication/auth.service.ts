@@ -3,9 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 //import * as CryptoJS from 'crypto-js';
+import {Store} from '@ngrx/store';
+import { AppState } from './../reducers';
+import { UserProfileCleared } from './../authenticated-user/user.actions';
 import { environment } from '../../environments/environment';
 import { AuthDataModel } from '../models/auth-data.model';
-import { AuthLoginModel } from '../models/auth-login.model';
+import { AuthLoginModel, AuthLoginResponseModel, 
+  AuthTokenRefreshResponseModel } from '../models/auth-login.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +27,8 @@ export class AuthService {
   private loginErrorListener = new Subject<boolean>();
  // private encryptKey = 'lzzuciihtdffhbdwpjablrtvlotwbpxzgadaaqzerghvwaveui';
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, 
+    private store: Store<AppState>) { }
 
   autoAuthUser() {
     const authInformation = this.getAuthData();
@@ -69,14 +74,15 @@ export class AuthService {
     this.loginErrorListener.next(false);
   }
 
-  private fetchRefreshToken() {
+  // public for testing purposes
+  public fetchRefreshToken() {
     //let bytes  = CryptoJS.AES.decrypt(this.refresh, this.encryptKey);
     //let refresh = bytes.toString(CryptoJS.enc.Utf8);
     let refresh = this.refresh;
     console.log('this is the unencryped refresh token')
     console.log(refresh);
-    this.http.post<{access: string
-    }>(`${environment.apiUrl}/auth/jwt/refresh`, {refresh: refresh})
+    this.http.post<AuthTokenRefreshResponseModel>(
+      `${environment.apiUrl}/auth/jwt/refresh`, {refresh: refresh})
       .subscribe(response => {
         console.log(response)
         if (response.access) {
@@ -143,12 +149,12 @@ export class AuthService {
 
   login(username: string, password: string) {
     const authData: AuthLoginModel = {username: username, password: password};
-    this.http.post<{refresh: string, refreshExpiresIn: number, access: string,
-    }>(`${environment.apiUrl}/auth/jwt/create`, authData)
+    this.http.post<AuthLoginResponseModel>(`${environment.apiUrl}/auth/jwt/create`, authData)
       .subscribe(response => {
         console.log('This is the login response:')
         console.log(response)
         if (response.access && response.refresh) {
+          console.log('The tokens are both in the login response')
           this.refresh = response.refresh;
           //this.refresh = CryptoJS.AES.encrypt(response.refresh, this.encryptKey).toString();//response.refresh;
           this.token = response.access;
@@ -160,22 +166,26 @@ export class AuthService {
           console.log('this is now:')
           console.log(dtToken);
           console.log('this is when the token will expire...');
-          //dtToken.setMinutes(dtToken.getMinutes() + 4);
-          dtToken.setSeconds(dtToken.getSeconds() + 50);
+          dtToken.setMinutes(dtToken.getMinutes() + environment.tokenMinsAmount);
+          dtToken.setSeconds(dtToken.getSeconds() + environment.tokenSecondsAmount);
           console.log(dtToken);
           this.tokenExpTime = dtToken;
           const dtRfrshTken:Date = new Date();
-          //dtRfrshTken.setHours( dtRfrshTken.getHours() + 23 );
-          //dtRfrshTken.setMinutes(dtRfrshTken.getMinutes() + 45);
-          dtRfrshTken.setMinutes(dtRfrshTken.getMinutes() + 2);
-          dtRfrshTken.setSeconds(dtRfrshTken.getSeconds() + 50);
+          // for testing, the refresh expires in 2 mins and 50 seconds
+          // in production, the refresh expires in 23 hours and 45 minutes
+          dtRfrshTken.setHours(dtRfrshTken.getHours() + environment.tokenRefreshHoursAmount);
+          dtRfrshTken.setMinutes(dtRfrshTken.getMinutes() + environment.tokenRefreshMinsAmount);
+          dtRfrshTken.setSeconds(dtRfrshTken.getSeconds() + environment.tokenRefreshSecondsAmount);
           this.refreshExpTime = new Date(dtRfrshTken);
-          this.setAuthTimer(50000); // 285000 (4 minutes 45 seconds) // 50000 (50 seconds)
+          this.setAuthTimer(environment.authTimerAmount); // 285000 (4 minutes 45 seconds) // 50000 (50 seconds)
           console.log('this is when the refresh expires')
           console.log(dtRfrshTken);
           this.saveAuthData(this.refresh, this.refreshExpTime,
             this.token, this.tokenExpTime);
           this.router.navigate(['/authenticated-user/user-profile']);
+        } else {
+          console.log('the tokens are not in the response:')
+          console.log(response);
         }
       }, error => {
         console.log(error)
@@ -193,6 +203,7 @@ export class AuthService {
     localStorage.removeItem('refresh');
     localStorage.removeItem('refreshExpiration');
     localStorage.removeItem('userId');
+    this.store.dispatch(new UserProfileCleared());
     this.router.navigate(['/']);
   }
 

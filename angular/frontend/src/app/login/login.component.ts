@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   constructor(public authService: AuthService) { }
 
   ngOnInit(): void {
-    this.isErrorLogin = this.authService.getIsAuth();
+    this.isErrorLogin = this.authService.getIsLoginError();
     this.errorLogin$ = this.authService
       .getLoginErrorListener()
       .subscribe(isErrorLogin => {

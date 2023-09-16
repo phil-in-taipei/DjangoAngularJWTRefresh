@@ -26,9 +26,9 @@ export class AppComponent {
     console.log("Current API URL:", environment.apiUrl);
     
     //this.authListenerSubs = this.authService
-    //.getAuthStatusListener()
-    //.subscribe(isAuthenticated => {
-    //  this.userIsAuthenticated = isAuthenticated;
-  //});
+    //  .getAuthStatusListener()
+    //  .subscribe(isAuthenticated => {
+    //    this.userIsAuthenticated = isAuthenticated;
+    //});
   }
 }
